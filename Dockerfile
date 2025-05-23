@@ -5,15 +5,21 @@ RUN apt-get update && apt-get install -y \
     postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install -U pip \
-    && pip install --no-cache pipenv \
-    && pip install --no-cache poetry
-
-COPY poetry.lock pyproject.toml /app/
+# Poetry
+RUN pip install --no-cache poetry
 
 WORKDIR /app
 
-RUN poetry config virtualenvs.create false \
-    && poetry install --with dev --no-root
+COPY . /app/
 
-ENTRYPOINT ["/bin/bash"]
+RUN poetry config virtualenvs.create false \
+    && poetry install --only main --no-interaction --no-ansi
+
+COPY . /app
+
+ENV FLASK_APP=realworld.app
+ENV FLASK_RUN_PORT=8080
+
+EXPOSE 8080
+
+CMD ["poetry", "run", "flask", "--app", "realworld.app", "run", "--host=0.0.0.0", "--port=8080"]
