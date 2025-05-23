@@ -14,6 +14,6 @@ COPY poetry.lock pyproject.toml /app/
 WORKDIR /app
 
 RUN poetry config virtualenvs.create false \
-    && poetry install --with dev
+    && poetry install --with dev --no-root
 
 ENTRYPOINT ["/bin/bash"]
